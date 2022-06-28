@@ -4,7 +4,7 @@ import Body from "../Components/Body";
 export default function FeedPage() {
     return(
         <Body sidebar>
-            <Posts />
+            <Posts write={true} />
         </Body>
     )
 }

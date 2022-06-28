@@ -1,22 +1,74 @@
 import {useState, useEffect} from 'react';
 import { Spinner, Stack, Image } from 'react-bootstrap';
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Body from "../Components/Body"
 import TimeAgo from '../Components/TimeAgo';
 import { useApi } from '../contexts/ApiProvider';
+import { useUser } from '../contexts/UserProvider';
+import { useFlash } from '../contexts/FlashProvider';
 import Posts from '../Components/Posts';
+import Button from 'react-bootstrap/Button';
 
 export default function UserPage() {
     const {username} = useParams();
     const [user, setUser] = useState();
+    const [isFollower, setIsFollower] = useState();
+    const { user: loggedInUser } = useUser();
     const api = useApi();
+    const navigate = useNavigate();
+    const flash = useFlash();
 
     useEffect(() => {
         (async () => {
             const response = await api.get('/users/' + username);
-            setUser(response.ok ? response.body : null);
+            if (response.ok) {
+                setUser(response.body);
+                if (response.body.username !== loggedInUser.username) {
+                    const follower = await api.get('/me/following/' + response.body.id);
+                    if (follower.status === 204) {
+                        setIsFollower(true);
+                    }
+                    else if (follower.status === 404) {
+                        setIsFollower(false);
+                    }
+                }
+                else {
+                    setIsFollower(null); 
+                }
+            }
+            else {
+                setUser(null);
+            }
         })();
     }, [api, username]);
+
+    const edit = () => {
+        navigate('/edit');
+    };
+
+    const follow = async () => {
+        const response = await api.post('/me/following/' + user.id);
+        if (response.ok) {
+            flash(
+            <>
+               You are now following  <b>{user.username}</b>. 
+            </>, 'success'
+            );
+        } 
+        setIsFollower(true);
+    };
+
+    const unfollow = async () => {
+        const response = await api.delete('/me/following/' + user.id);
+        if (response.ok) {
+            flash(
+            <>
+               You have unfollowed  <b>{user.username}</b>. 
+            </>, 'success'
+            );
+        } 
+        setIsFollower(false);
+    };
 
     return (
         <Body sidebar>
@@ -29,7 +81,7 @@ export default function UserPage() {
                     :
                     <>
                         <Stack direction="horizontal" gap={4}>
-                            <Image src={user.avatar_url + '&s=128'} roundCircle />
+                            <Image src={user.avatar_url + '&s=128'} roundedCircle />
                             <div>
                                 <h1>{user.username}</h1>
                                 {user.about_me && <h5>{user.about_me}</h5>}
@@ -38,6 +90,15 @@ export default function UserPage() {
                                     <br />
                                     Last seen: <TimeAgo isoDate={user.last_seen} />
                                 </p>
+                                {isFollower === null &&
+                                    <Button variant='primary' onClick={edit}>Edit</Button>
+                                }
+                                {isFollower === false && 
+                                    <Button variant='primary' onClick={follow}>Follow</Button>
+                                }
+                                {isFollower === true &&
+                                    <Button variant='primary' onClick={unfollow}>Unfollow</Button>
+                                }
                             </div>
                         </Stack>
                         <Posts content={user.id} />
