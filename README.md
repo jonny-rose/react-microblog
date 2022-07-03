@@ -1,70 +1,74 @@
-# Getting Started with Create React App
+# microblog-api
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Welcome to my Microblog 
 
-## Available Scripts
+A micro blog web application that integrates a React frontend over a Flask backend API.
 
-In the project directory, you can run:
+## Features:
+* Register users
+* Authentication
+* User profile details edit/update
+* Password update or reset via email
+* Write blog posts
+* View all users posts on Explore page
+* Follow/Unfollow other users
+* View the posts of the users you follow as well as your own posts on Feed Page
 
-### `npm start`
+## Deployment
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+This application has 2 environments: 
+ * the backend witch is a flask environment module sits on the subfolder 'backend-api' and has the purpose of listening to requests made from the frontend via api routes, talks with the database and returns responses to the frontend.
+ * the frontend is a React environment sits on the root folder and it is the UI that sends the requests made by the client to the backend and shows the responses as html.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Setup
 
-### `npm test`
+Follow these steps if you want to run this application on your computer as a standalone Python application.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Backend
+```bash
+cd backend-api
+cp .env.example .env
+```
 
-### `npm run build`
+Open the new `.env` file and enter values for the configuration variables.
+* the DISABLE_AUTH variable can be set as true and will deactivate user authentication required, or it can be set as false, in which case the user authentication will be required in order to navigate through the application routes.
+* the rest of the variables from the `.env` file are the EMAIL configuration and should be set in order to use de mailing service.
+* more information regarding how to setup the `.env` can be found inside the `.env.example` file
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Run locally
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Set up a Python 3 virtualenv and install the dependencies on it:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
-### `npm run eject`
+Create the database and populate it with some randomly generated data:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```
+flask db upgrade
+flask fake users 10
+flask fake posts 100
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Run the application with the Flask development web server:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```
+flask run
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Frontend
 
-## Learn More
+Setup the node environment and run the React development web server:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+cd into root folder
+npm install
+npm run
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The backend runs on `localhost:5000`. You can access the API documentation at `http://localhost:5000/docs`.
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+The frontend runs on `localhost:3000`.
