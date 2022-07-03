@@ -2,7 +2,7 @@
 
 ## Welcome to my Microblog 
 
-A micro blog web application that integrates a React frontend over a Flask backend API.
+A simple blog web application that integrates a React frontend over a Flask backend API.
 
 ## Features:
 * Register users
